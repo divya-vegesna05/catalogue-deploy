@@ -44,26 +44,26 @@ pipeline{
             """   
         }
     }
-    stage("apply")
-    {
-    //    when
-    //    {
-    //     expression
-    //     {
-    //         params.Action == 'apply'
-
-    //     }
-    //    }
-        steps{
-             
-            sh """
-            cd terraform
-            terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
-            """
-        }
-    }
-    // stage("destroy")
+    // stage("apply")
     // {
+    // //    when
+    // //    {
+    // //     expression
+    // //     {
+    // //         params.Action == 'apply'
+
+    // //     }
+    // //    }
+    //     steps{
+             
+    //         sh """
+    //         cd terraform
+    //         terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
+    //         """
+    //     }
+    // }
+    stage("destroy")
+    {
     //    when
     //    {
     //     expression
@@ -72,18 +72,19 @@ pipeline{
 
     //     }
     //    }
-    //     input {
-    //             message "Should we continue?"
-    //             ok "Yes, we should."
-    //     }
-    //     steps{
+        // input {
+        //         message "Should we continue?"
+        //         ok "Yes, we should."
+        // }
+        steps{
              
-    //         sh """
-    //         cd 01-vpc
-    //         terraform destroy -auto-approve
-    //         """
-    //     }
-    // }
+            sh """
+           cd terraform
+            terraform destroy -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
+           """
+        
+        }
+    }
 }    
 
  post { 
