@@ -44,8 +44,8 @@ pipeline{
             """   
         }
     }
-    stage("apply")
-    {
+   // stage("apply")
+    //{
     //    when
     //    {
     //     expression
@@ -54,16 +54,16 @@ pipeline{
 
     //     }
     //    }
-        steps{
+      //  steps{
              
-            sh """
-            cd terraform
-            terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
-            """
-        }
-    }
-    // stage("destroy")
-    // {
+         //   sh """
+          //  cd terraform
+          //  terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
+          //  """
+     //   }
+ //   }
+     stage("destroy")
+     {
     //    when
     //    {
     //     expression
@@ -76,14 +76,14 @@ pipeline{
         //         message "Should we continue?"
         //         ok "Yes, we should."
         // }
-        // steps{
+         steps{
              
-        //     sh """
-        //    cd terraform
-        //     terraform destroy -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
-        //    """
+            sh """
+           cd terraform
+           terraform destroy  -auto-approve
+           """
         
-        // }
+     }
     } 
 
  post { 
