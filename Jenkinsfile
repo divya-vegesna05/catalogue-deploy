@@ -44,8 +44,8 @@ pipeline{
             """   
         }
     }
-    // stage("apply")
-    // {
+    stage("apply")
+    {
     //    when
     //    {
     //     expression
@@ -54,18 +54,14 @@ pipeline{
 
     //     }
     //    }
-    //     input {
-    //             message "Should we continue?"
-    //             ok "Yes, we should."
-    //     }
-    //     steps{
+        steps{
              
-    //         sh """
-    //         cd 01-vpc
-    //         terraform apply -auto-approve
-    //         """
-    //     }
-    // }
+            sh """
+            cd terraform
+            terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version} -auto-approve"
+            """
+        }
+    }
     // stage("destroy")
     // {
     //    when
