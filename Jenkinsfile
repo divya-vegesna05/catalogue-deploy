@@ -18,8 +18,8 @@ pipeline{
         steps{
              
             sh """
-              echo "version: ${params.version}"
-              echo "environment: ${params.environment}"
+              echo "version: ${version}"
+              echo "environment: ${environment}"
             """
             }
          }
