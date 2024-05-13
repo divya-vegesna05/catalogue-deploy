@@ -36,3 +36,6 @@ variable "zone_id" {
   type = string
   default = "Z04879463GXQ7LRPO48K6"
 }
+variable "app_version" {
+ type = string 
+}

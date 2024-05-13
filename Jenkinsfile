@@ -34,17 +34,16 @@ pipeline{
             """
             }
          }
-    //     stage("plan")
-    //      {
-    //     steps{
+        stage("plan")
+         {
+        steps{
             
-    //         sh """
-    //         cd terraform
-    //         terraform plan -var-file="${environment}/${environment}.tfvars" -var="app_version=${version}"
-    //         """   
-          
-    //     }
-    // }
+            sh """
+            cd terraform
+            terraform plan -var-file="${environment}/${environment}.tfvars" -var="app_version=${version}"
+            """   
+        }
+    }
     // stage("apply")
     // {
     //    when
