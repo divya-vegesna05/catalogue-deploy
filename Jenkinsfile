@@ -24,23 +24,22 @@ pipeline{
             }
          }
 
-    //      stage("init")
-    //      {
-    //     steps{
+         stage("init")
+         {
+        steps{
              
-    //         sh """
-    //         cd 01-vpc
-    //         terraform init -reconfigure
-    //         """
-    //         }
-    //      }
+            sh """
+            terraform init -backend-config="${environment}/backend.tf" -reconfigure
+            """
+            }
+         }
     //     stage("plan")
     //      {
     //     steps{
             
     //         sh """
-    //         cd 01-vpc
-    //         terraform plan
+    //         cd terraform
+    //         terraform plan -var-file="${environment}/${environment}.tfvars" -var="app_version=${version}"
     //         """   
           
     //     }
