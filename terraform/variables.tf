@@ -42,3 +42,6 @@ variable "app_version" {
 variable "iam_instance_profile" {
   default = "terraform_admin_access"
 }
+variable "priority" {
+  default = 10
+}
