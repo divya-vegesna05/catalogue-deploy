@@ -68,7 +68,7 @@ pipeline{
                           nexusArtifactUploader(
                             nexusVersion: 'nexus3',
                                 protocol: 'http',
-                           nexusUrl: ${pipelineglobals.nexus_url},
+                           nexusUrl: "${pipelineglobals.nexus_url}",
                             groupId: 'com.roboshop',
                             version: "${package_version}",
                             repository: '${configmap.component}',
@@ -82,8 +82,7 @@ pipeline{
                             )
                          }        
          } 
-}
-    stage("Deploy")
+    stage("Deploytodev")
     {
             when {
                 $params.deploy
@@ -97,6 +96,7 @@ pipeline{
         build job: "catalogue-deploy", parameters: params
         }  
          }
+    }
     }
  post { 
         always { 
