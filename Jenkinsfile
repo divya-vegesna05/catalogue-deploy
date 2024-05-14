@@ -93,7 +93,7 @@ pipeline{
          string(name: 'version', value: "${package_version}"),
          string(name: 'environment', value: "dev")
                 ]
-        build job: "catalogue-deploy", parameters: params
+        build job: "../catalogue-deploy", parameters: params
         }  
          }
     }
