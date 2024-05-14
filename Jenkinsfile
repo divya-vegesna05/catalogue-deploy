@@ -84,9 +84,9 @@ pipeline{
          } 
     stage("Deploytodev")
     {
-            when {
-                $params.deploy
-            }
+       when {
+           $params.deploy
+        }
         steps{
              script{
                 def params = [
