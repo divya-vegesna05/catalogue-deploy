@@ -1,103 +1,91 @@
-def call(Map configmap) {
 pipeline{
     agent{
          node {
         label 'agent-1'
     }
     }
-    parameters {
-         booleanParam(name: 'Deploy', defaultValue: false, description: 'Toggle this value')
-    }
     options {
         timeout(time: 1, unit: 'HOURS') 
+         ansiColor('xterm')
     }
-    environment { 
-        package_version = ''
-       // nexus_url = '172.31.5.248:8081'
-    }
-
+    parameters {
+         string(name: 'version', defaultValue: '', description: 'Pick version')
+         string(name: 'environment', defaultValue: '', description: 'Pick environment')
+     }
     stages{
-         stage("get version")
+         stage("version")
          {
         steps{
              
-           script{
-            def file = readJSON file: 'package.json'
-            package_version = file.version
-            echo "${package_version}"
-           }
+            sh """
+              echo "version: ${version}"
+              echo "environment: ${environment}"
+            """
             }
          }
-        stage("install dependencies")
+
+         stage("init")
          {
         steps{
-         sh """    
-            npm install  
-         """   
-        }
-    }
-    stage("Run unit test")
-    {
-        steps{
+             
             sh """
-            echo "Run unit test"
+            cd terraform
+            terraform init -backend-config="${environment}/backend.tf" -reconfigure
             """
-        }
-    }
-    stage("sonar scanner")
-    {
+            }
+         }
+        stage("plan")
+         {
         steps{
+            
             sh """
-            echo "sonr test run"
-            """
+            cd terraform
+            terraform plan -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}"
+            """   
         }
     }
-     stage("build")
-         {
-        steps{
-         sh """    
-          ls -la
-          zip -q -r ${configmap.component}.zip ./* -x '.git' -x '*.zip'
-          ls -ltr
-         """   
-        }
-    }
-    stage("deploy")
-         {
-                steps {
-                          nexusArtifactUploader(
-                            nexusVersion: 'nexus3',
-                                protocol: 'http',
-                           nexusUrl: "${pipelineglobals.nexus_url}",
-                            groupId: 'com.roboshop',
-                            version: "${package_version}",
-                            repository: '${configmap.component}',
-                            credentialsId: 'nexus-id',
-                             artifacts: [
-                               [artifactId: "${configmap.component}",
-                                 classifier: '',
-                                    file: "${configmap.component}.zip",
-                              type: 'zip']
-                                ]
-                            )
-                         }        
-         } 
-    // stage("Deploytodev")
-    // {
-    //    when {
-    //        $params.deploy
+    stage("apply")
+    {
+    //    when
+    //    {
+    //     expression
+    //     {
+    //         params.Action == 'apply'
+
     //     }
-    //     steps{
-    //          script{
-    //             def params = [
-    //      string(name: 'version', value: "${package_version}"),
-    //      string(name: 'environment', value: "dev")
-    //             ]
-    //     build job: "../catalogue-deploy", parameters: params
-    //     }  
-    //      }
-    // }
+    //    }
+        steps{
+             
+            sh """
+            cd terraform
+            terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
+            """
+        }
     }
+    // stage("destroy")
+    // {
+    //    when
+    //    {
+    //     expression
+    //     {
+    //         params.Action == 'destroy'
+
+    //     }
+    //    }
+        // input {
+        //         message "Should we continue?"
+        //         ok "Yes, we should."
+        // }
+        // steps{
+             
+        //     sh """
+        //    cd terraform
+        //     terraform destroy -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
+        //    """
+        
+        // }
+    } 
+
  post { 
         always { 
             echo 'I will always say Hello again!'
@@ -109,6 +97,5 @@ pipeline{
                 failure { 
             echo 'I will always say success!'
         }
-    }
-}
+ }
 }
