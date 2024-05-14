@@ -40,13 +40,13 @@ pipeline{
             
             sh """
             cd terraform
-            terraform plan -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}"
+            terraform plan -var-file="../${environment}/${environment}.tfvars" -var="app_version=1.0.0"
             """   
         }
     }
     stage("apply")
     {
-    //    when
+    //    
     //    {
     //     expression
     //     {
@@ -62,8 +62,8 @@ pipeline{
             """
         }
     }
-    // stage("destroy")
-    // {
+ //    stage("destroy")
+     //{
     //    when
     //    {
     //     expression
@@ -76,16 +76,16 @@ pipeline{
         //         message "Should we continue?"
         //         ok "Yes, we should."
         // }
-        // steps{
+       //  steps{
              
-        //     sh """
-        //    cd terraform
-        //     terraform destroy -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
-        //    """
+         //   sh """
+         //  cd terraform
+           //terraform destroy -var="app_version=${version}" -auto-approve
+          // """
         
-        // }
-    } 
-
+    // }
+   // } 
+    }
  post { 
         always { 
             echo 'I will always say Hello again!'
