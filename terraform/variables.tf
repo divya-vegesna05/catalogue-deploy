@@ -39,3 +39,6 @@ variable "zone_id" {
 variable "app_version" {
  type = string 
 }
+variable "iam_instance_profile" {
+  default = "terraform_admin_access"
+}
