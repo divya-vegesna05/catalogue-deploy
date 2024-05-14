@@ -74,9 +74,9 @@ pipeline{
                             repository: '${configmap.component}',
                             credentialsId: 'nexus-id',
                              artifacts: [
-                               [artifactId: '${configmap.component}',
+                               [artifactId: "${configmap.component}",
                                  classifier: '',
-                                    file: '${configmap.component}.zip',
+                                    file: "${configmap.component}.zip",
                               type: 'zip']
                                 ]
                             )
