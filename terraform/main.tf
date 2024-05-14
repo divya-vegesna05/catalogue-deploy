@@ -73,7 +73,7 @@ depends_on = [
   ]
 }
 resource "aws_launch_template" "catalogue" {
-  name = "${local.name}-${var.tags.Component}"
+  name_prefix  = "${local.name}-${var.tags.Component}"
   image_id = aws_ami_from_instance.catalogue.id
   instance_initiated_shutdown_behavior = "terminate"
   instance_type = "t2.micro"
