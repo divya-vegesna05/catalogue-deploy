@@ -1,90 +1,102 @@
+def call(Map configmap) {
 pipeline{
     agent{
          node {
         label 'agent-1'
     }
     }
+    parameters {
+         booleanParam(name: 'Deploy', defaultValue: false, description: 'Toggle this value')
+    }
     options {
         timeout(time: 1, unit: 'HOURS') 
-         ansiColor('xterm')
     }
-    parameters {
-         string(name: 'version', defaultValue: '', description: 'Pick version')
-         string(name: 'environment', defaultValue: '', description: 'Pick environment')
-     }
+    environment { 
+        package_version = ''
+       // nexus_url = '172.31.5.248:8081'
+    }
+
     stages{
-         stage("version")
+         stage("get version")
          {
         steps{
              
-            sh """
-              echo "version: ${version}"
-              echo "environment: ${environment}"
-            """
+           script{
+            def file = readJSON file: 'package.json'
+            package_version = file.version
+            echo "${package_version}"
+           }
             }
          }
-
-         stage("init")
+        stage("install dependencies")
          {
         steps{
-             
-            sh """
-            cd terraform
-            terraform init -backend-config="${environment}/backend.tf" -reconfigure
-            """
-            }
-         }
-        stage("plan")
-         {
-        steps{
-            
-            sh """
-            cd terraform
-            terraform plan -var-file="../${environment}/${environment}.tfvars" -var="app_version=1.0.0"
-            """   
+         sh """    
+            npm install  
+         """   
         }
     }
-    stage("apply")
+    stage("Run unit test")
     {
-    //    
-    //    {
-    //     expression
-    //     {
-    //         params.Action == 'apply'
-
-    //     }
-    //    }
         steps{
-             
             sh """
-            cd terraform
-            terraform apply -var-file="../${environment}/${environment}.tfvars" -var="app_version=${version}" -auto-approve
+            echo "Run unit test"
             """
         }
     }
- //    stage("destroy")
-     //{
-    //    when
-    //    {
-    //     expression
-    //     {
-    //         params.Action == 'destroy'
-
-    //     }
-    //    }
-        // input {
-        //         message "Should we continue?"
-        //         ok "Yes, we should."
-        // }
-       //  steps{
-             
-         //   sh """
-         //  cd terraform
-           //terraform destroy -var="app_version=${version}" -auto-approve
-          // """
-        
-    // }
-   // } 
+    stage("sonar scanner")
+    {
+        steps{
+            sh """
+            echo "sonr test run"
+            """
+        }
+    }
+     stage("build")
+         {
+        steps{
+         sh """    
+          ls -la
+          zip -q -r ${configmap.component}.zip ./* -x '.git' -x '*.zip'
+          ls -ltr
+         """   
+        }
+    }
+    stage("deploy")
+         {
+                steps {
+                          nexusArtifactUploader(
+                            nexusVersion: 'nexus3',
+                                protocol: 'http',
+                           nexusUrl: ${pipelineglobals.nexus_url},
+                            groupId: 'com.roboshop',
+                            version: "${package_version}",
+                            repository: '${configmap.component}',
+                            credentialsId: 'nexus-id',
+                             artifacts: [
+                               [artifactId: '${configmap.component}',
+                                 classifier: '',
+                                    file: '${configmap.component}.zip',
+                              type: 'zip']
+                                ]
+                            )
+                         }        
+         } 
+}
+    stage("Deploy")
+    {
+            when {
+                $params.deploy
+            }
+        steps{
+             script{
+                def params = [
+         string(name: 'version', value: "${package_version}"),
+         string(name: 'environment', value: "dev")
+                ]
+        build job: "catalogue-deploy", parameters: params
+        }  
+         }
     }
  post { 
         always { 
@@ -97,5 +109,6 @@ pipeline{
                 failure { 
             echo 'I will always say success!'
         }
- }
+    }
+}
 }
