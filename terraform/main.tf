@@ -4,6 +4,8 @@ module "catalogue" {
   vpc_id = data.aws_ssm_parameter.vpc_id.value
   iam_instance_profile = var.iam_instance_profile
   tags = var.tags
+  Environment = var.Environment
+  common_tags = var.common_tags
   app_version = var.app_version
  private_subnet_id =  split(",", data.aws_ssm_parameter.private_subnet_id.value)
   component_security_group_id = data.aws_ssm_parameter.catalogue-security_group_id.value
