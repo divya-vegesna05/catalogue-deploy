@@ -11,6 +11,8 @@ pipeline{
     parameters {
          string(name: 'version', defaultValue: '', description: 'Pick version')
          string(name: 'environment', defaultValue: '', description: 'Pick environment')
+         booleanParam(name: 'Create', defaultValue: false, description: 'Toggle this value')
+         booleanParam(name: 'Destroy', defaultValue: false, description: 'Toggle this value')
      }
     stages{
          stage("version")
@@ -46,14 +48,14 @@ pipeline{
     }
     stage("apply")
     {
-    //    when
-    //    {
-    //     expression
-    //     {
-    //         params.Action == 'apply'
+       when
+       {
+        expression
+        {
+            params.Create
 
-    //     }
-    //    }
+        }
+       }
         steps{
              
             sh """
@@ -68,7 +70,7 @@ pipeline{
     //    {
     //     expression
     //     {
-    //         params.Action == 'destroy'
+    //         params.Destroy
 
     //     }
     //    }

@@ -1,4 +1,4 @@
-environment = "prod"
+Environment = "prod"
 common_tags = {
     Project = "roboshop"
     Environment = "prod"
